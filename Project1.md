@@ -4,7 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
-
+# Michel Racine
 
 ```r
 library("ggplot2")
@@ -83,7 +83,7 @@ total_steps_per_day <- aggregate(steps ~ date, data, sum)
 mean_steps <- mean(total_steps_per_day$steps)
 median_steps <- median(total_steps_per_day$steps)
 
-qplot(total_steps_per_day$steps, binwidth=1000, xlab="Total number of steps taken each day")
+qplot(total_steps_per_day$steps, binwidth=1000, xlab="Total number of steps taken each day", main="Mean total number of steps taken per day")
 ```
 
 ![](Project1_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
@@ -123,7 +123,7 @@ total_steps_per_day.i <- aggregate(steps ~ date, data.i, sum)
 mean_steps.i <- mean(total_steps_per_day.i$steps)
 median_steps.i <- median(total_steps_per_day.i$steps)
 
-qplot(total_steps_per_day.i$steps, binwidth=1000, xlab="Total number of steps taken each day - imputing missing values with mean of 5-minute intervals")
+qplot(total_steps_per_day.i$steps, binwidth=1000, xlab="Number of steps per day", main="Total number of steps taken each day - imputing missing values with mean of 5-minute intervals")
 ```
 
 ![](Project1_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
