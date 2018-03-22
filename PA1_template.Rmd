@@ -5,21 +5,65 @@ output:
     keep_md: true
 ---
 
+```{r}
+library("ggplot2")
+library(dplyr)
+setwd("/Users/Michel/Dropbox/Coursera/Data Science - John Hopkin's/Reproducible Research/week2/Course Project 1")
+
+
+```
 
 ## Loading and preprocessing the data
+### We want to ignore NA values
+```{R}
+activities <- read.csv("activity.csv")
+filtered_activities <- na.omit(activities)
 
-
+```
 
 ## What is mean total number of steps taken per day?
+```{R}
+total_steps_per_day <- aggregate(steps ~ date, activities, sum)
 
+
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+
+qplot(total_steps_per_day$steps, binwidth=1000, xlab="total number of steps taken each day")
+
+```
+
+The mean of the of the total number of steps is `r sprintf("%4.0f", mean_steps)`.  
+The median of the of the total number of steps is `r sprintf("%4.0f", median_steps)`. 
 
 
 ## What is the average daily activity pattern?
+```{R}
+average_steps_per_interval <- aggregate(steps ~ interval, activities, mean)
 
 
+plot(average_steps_per_interval$interval, average_steps_per_interval$steps, type="l", xlab="Interval", 
+     ylab="Average number of steps")
 
-## Imputing missing values
+Max_steps <- max(average_steps_per_interval$steps)
+Max_interval <- average_steps_per_interval[average_steps_per_interval$steps == Max_steps,]$interval
+```
+The interval `r sprintf("%4.0f", Max_interval)` on average contains the maximum number of steps, which is `r sprintf("%4.0f", Max_steps)`.
 
+## Replace missing values by using the mean for the 5-minute interval
+### We will re-use the average_steps_per_interval data frame...
+```{R}
+missing_values = sum(!complete.cases(activities))
 
+activities2 <- transform(activities, steps = ifelse(is.na(activities$steps), average_steps_per_interval$steps[match(activities$interval, average_steps_per_interval$interval)], activities$steps))
+
+total_steps_per_day2 <- aggregate(steps ~ date, activities2, sum)
+
+mean_steps2 <- mean(total_steps_per_day2$steps)
+median_steps2 <- median(total_steps_per_day2$steps)
+
+qplot(total_steps_per_day2$steps, binwidth=1000, xlab="total number of steps taken each day")
+
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?

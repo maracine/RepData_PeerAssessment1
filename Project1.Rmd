@@ -1,0 +1,78 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r}
+library("ggplot2")
+library(dplyr)
+library(lubridate)
+library(chron)
+library(lattice)
+
+```
+
+## Loading and preprocessing the data
+### We want to ignore NA values
+```{R}
+data <- read.csv("activity.csv")
+filtered_data <- na.omit(data)
+
+```
+
+## What is mean total number of steps taken per day?
+```{R}
+total_steps_per_day <- aggregate(steps ~ date, data, sum)
+
+
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+
+qplot(total_steps_per_day$steps, binwidth=1000, xlab="Total number of steps taken each day", main="Mean total number of steps taken per day")
+
+```
+
+The mean of the of the total number of steps is `r sprintf("%4.0f", mean_steps)`.  
+The median of the of the total number of steps is `r sprintf("%4.0f", median_steps)`. 
+
+
+## What is the average daily activity pattern?
+```{R}
+steps_per_interval <- aggregate(steps ~ interval, data, mean)
+
+
+plot(steps_per_interval$interval, steps_per_interval$steps, type="l", xlab="Interval", 
+     ylab="Average number of steps")
+
+Max_steps <- max(steps_per_interval$steps)
+Max_interval <- steps_per_interval[steps_per_interval$steps == Max_steps,]$interval
+```
+The interval `r sprintf("%4.0f", Max_interval)` on average contains the maximum number of steps, which is `r sprintf("%4.0f", Max_steps)`.
+
+## Replace missing values by using the mean for the 5-minute interval
+### We will re-use the steps_per_interval data frame...
+```{R}
+missing_values = sum(!complete.cases(data))
+
+data.i <- transform(data, steps = ifelse(is.na(data$steps), steps_per_interval$steps[match(data$interval, steps_per_interval$interval)], data$steps))
+
+total_steps_per_day.i <- aggregate(steps ~ date, data.i, sum)
+
+mean_steps.i <- mean(total_steps_per_day.i$steps)
+median_steps.i <- median(total_steps_per_day.i$steps)
+
+qplot(total_steps_per_day.i$steps, binwidth=1000, xlab="Number of steps per day", main="Total number of steps taken each day - imputing missing values with mean of 5-minute intervals")
+
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+data.i$weekday <- ifelse(is.weekend(data.i$date), "Weekend", "Weekday")
+
+steps_per_interval.i <- aggregate(steps ~ interval + weekday, data.i, mean)
+
+xyplot(steps_per_interval.i$steps ~ steps_per_interval.i$interval|steps_per_interval.i$weekday, main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
+
+
