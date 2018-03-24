@@ -68,11 +68,11 @@ qplot(total_steps_per_day.i$steps, binwidth=1000, xlab="Number of steps per day"
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
+```{R}
 data.i$weekday <- ifelse(is.weekend(data.i$date), "Weekend", "Weekday")
 
 steps_per_interval.i <- aggregate(steps ~ interval + weekday, data.i, mean)
 
 xyplot(steps_per_interval.i$steps ~ steps_per_interval.i$interval|steps_per_interval.i$weekday, main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
-
+```
 
