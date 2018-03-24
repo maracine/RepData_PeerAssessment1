@@ -1,6 +1,8 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
 
+output: rmarkdown::github_document
+
 ---
 # Michel Racine
 ```{r}
